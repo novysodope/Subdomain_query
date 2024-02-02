@@ -1,5 +1,5 @@
 # Subdomain_query
-根据备案和域名证书来做子域名收集
+根据备案和证书来做子域名收集
 ## 使用
 `python3 Subdomain_query.py`
 ```bash
