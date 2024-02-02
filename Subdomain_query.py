@@ -63,11 +63,12 @@ def check_protocol(urls,url):
         title,response_length = extract_title(response.content, 'utf-8')
         if (response.status_code!=503):
             print(f"Domain: {urls} | Status: {response.status_code} | Title: {title} | Length: {response_length}\n")
+            http_write_to_file(result_filename,urls + " - " + title + " - " + str(response.status_code) + "\n")
         pass
     except Exception as e:
         print(f"{e}\n")
-    if(response.status_code!=503):
-        http_write_to_file(result_filename,urls + " - " + title + " - " + str(response.status_code) + "\n")
+    # if(response.status_code!=503):
+    #     http_write_to_file(result_filename,urls + " - " + title + " - " + str(response.status_code) + "\n")
 
 def extract_title(html,encoding='utf-8'):
     soup = BeautifulSoup(html, 'html.parser', from_encoding=encoding)
