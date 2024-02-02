@@ -53,8 +53,8 @@ def check_domains(domains_file):
 def check_protocol(url):
     response = requests.get(url, timeout=5)
     try:
-        title = extract_title(response.content, 'utf-8')
-        print(f"Domain: {url} | Status: {response.status_code} | Title: {title}\n")
+        title,response_length = extract_title(response.content, 'utf-8')
+        print(f"Domain: {url} | Status: {response.status_code} | Title: {title} | Length: {response_length}\n")
         pass
     except Exception as e:
         print(f"{e}\n")
@@ -62,7 +62,7 @@ def check_protocol(url):
 def extract_title(html,encoding='utf-8'):
     soup = BeautifulSoup(html, 'html.parser', from_encoding=encoding)
     title_tag = soup.title
-    return title_tag.string.strip() if title_tag else "N/A"
+    return title_tag.string.strip() if title_tag else "N/A",len(html)
 
 def main():
 
