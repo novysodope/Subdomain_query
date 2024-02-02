@@ -80,9 +80,13 @@ ________________________________________________________________________________
 [*] 正在进行状态检测...
 __________________________________________________________________
 
-Domain: http://whitecap100.org | Status: 200 | Title: 白帽100安全攻防实验室
+Domain: http://whitecap100.org | Status: 200 | Title: 白帽100安全攻防实验室 | Length: 12607
 
-Domain: https://whitecap100.org | Status: 200 | Title: 白帽100安全攻防实验室
+Domain: https://whitecap100.org | Status: 200 | Title: 白帽100安全攻防实验室 | Length: 12607
+
+Domain: http://team.whitecap100.org | Status: 200 | Title: 白帽一百少先队 | Length: 18572
+
+Domain: https://team.whitecap100.org | Status: 200 | Title: 白帽一百少先队 | Length: 18572
 ...
 
 [+] 任务结束
