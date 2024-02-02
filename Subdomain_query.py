@@ -4,6 +4,7 @@ import json
 import urllib3
 import time
 import sys
+import argparse
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -31,14 +32,49 @@ def fetch_a_tags(url, headers):
         print(f"Failed to retrieve data from {url}. Status code: {response.status_code}")
         return []
 
+def check_domains(domains_file):
+    with open(domains_file, 'r', encoding='utf-8') as file:
+        domains = file.readlines()
+
+    for domain in domains:
+        domain = domain.strip()  # 去除首尾空白符，例如换行符
+        http_url = f"http://{domain}"
+        https_url = f"https://{domain}"
+
+        try:
+            # 检查HTTP协议
+            check_protocol(http_url)
+            # 检查HTTPS协议
+            check_protocol(https_url)
+
+        except requests.RequestException as e:
+            print(f"{e}\n")
+
+def check_protocol(url):
+    response = requests.get(url, timeout=5)
+    try:
+        title = extract_title(response.content, 'utf-8')
+        print(f"Domain: {url} | Status: {response.status_code} | Title: {title}\n")
+        pass
+    except Exception as e:
+        print(f"{e}\n")
+
+def extract_title(html,encoding='utf-8'):
+    soup = BeautifulSoup(html, 'html.parser', from_encoding=encoding)
+    title_tag = soup.title
+    return title_tag.string.strip() if title_tag else "N/A"
+
 def main():
 
     fingerprint()
 
-    if len(sys.argv) < 2:
-        print("\n[?] Use: python3 Subdomain_query.py xxx.com")
-        return
-    url = sys.argv[1]
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('url', type=str, help='python3 Subdomain_query.py xxx.com')
+    parser.add_argument('--check', action='store_true', help='可选项，同时对收集结果进行状态检测，输出标题')
+    args = parser.parse_args()
+
+    url = args.url
+    check_option = args.check
 
     print("[*] 正在执行任务，请稍后...等待时间视网络情况而定,一般10秒内就有结果，资产多的话时间会更长")
 
@@ -113,7 +149,15 @@ def main():
     	print(tag)
     	write_to_file(result_filename, [tag])
     print("\n")
-    print(f"收集完成，如有结果会在当前目录下生成{result_filename}文件")
+    print(f"收集完成，如有结果会在当前目录下生成{result_filename}文件\n")
+
+    if check_option:
+        print("[*] 正在进行状态检测...")
+        print("__________________________________________________________________\n")
+        check_domains(f"{url}_output.txt")
+    print("\n")
+    print("[+] 任务结束")
+
 def fingerprint():
 	author = '''
 
