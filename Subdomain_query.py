@@ -13,6 +13,11 @@ def write_to_file(filename, data):
         for item in data:
             file.write(f"{item}\n")
 
+def http_write_to_file(filename, data):
+    with open(filename, 'a', encoding='utf-8') as file:
+        for item in data:
+            file.write(f"{item}")
+
 def fetch_data(url, page, headers):
     response = requests.get(f"{url}&page={page}", verify=False, headers=headers)
     if response.status_code == 200:
@@ -32,7 +37,7 @@ def fetch_a_tags(url, headers):
         print(f"Failed to retrieve data from {url}. Status code: {response.status_code}")
         return []
 
-def check_domains(domains_file):
+def check_domains(domains_file,url):
     with open(domains_file, 'r', encoding='utf-8') as file:
         domains = file.readlines()
 
@@ -43,21 +48,26 @@ def check_domains(domains_file):
 
         try:
             # 检查HTTP协议
-            check_protocol(http_url)
+            check_protocol(http_url,url)
             # 检查HTTPS协议
-            check_protocol(https_url)
+            check_protocol(https_url,url)
 
         except requests.RequestException as e:
-            print(f"{e}\n")
+             pass
 
-def check_protocol(url):
-    response = requests.get(url, timeout=5)
+
+def check_protocol(urls,url):
+    result_filename = f"{url}_status_output.txt"
+    response = requests.get(urls, timeout=5)
     try:
         title,response_length = extract_title(response.content, 'utf-8')
-        print(f"Domain: {url} | Status: {response.status_code} | Title: {title} | Length: {response_length}\n")
+        if (response.status_code!=503):
+            print(f"Domain: {urls} | Status: {response.status_code} | Title: {title} | Length: {response_length}\n")
         pass
     except Exception as e:
         print(f"{e}\n")
+    if(response.status_code!=503):
+        http_write_to_file(result_filename,urls + " - " + title + " - " + str(response.status_code) + "\n")
 
 def extract_title(html,encoding='utf-8'):
     soup = BeautifulSoup(html, 'html.parser', from_encoding=encoding)
@@ -152,9 +162,9 @@ def main():
     print(f"收集完成，如有结果会在当前目录下生成{result_filename}文件\n")
 
     if check_option:
-        print("[*] 正在进行状态检测...")
+        print("[*] 正在进行状态检测(跳过503错误)...")
         print("__________________________________________________________________\n")
-        check_domains(f"{url}_output.txt")
+        check_domains(f"{url}_output.txt",url)
     print("\n")
     print("[+] 任务结束")
 
