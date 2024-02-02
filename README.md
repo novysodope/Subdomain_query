@@ -51,6 +51,8 @@ xxx.xxxx.com
 ...
 
 收集完成，如有结果会在当前目录下生成xxx.com_output.txt文件
+
+[+] 任务结束
 ```
 `python3 Subdomain_query.py xxx.com --check`
 ```bash
