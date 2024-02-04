@@ -92,8 +92,9 @@ Domain: https://team.whitecap100.org | Status: 200 | Title: 白帽一百少先�
 [+] 任务结束
 ```
 ### 搭配dirsearch
-`{url}`改成你输入的目标地址，比如whitecap100.org
-`python3 Subdomain_query.py whitecap100.org && python3 dirsearch.py -l {url}_output.txt`
+`{url}`改成你输入的目标地址，比如whitecap100.org，`--check`参数可选
+
+`python3 Subdomain_query.py whitecap100.org [--check] && python3 dirsearch.py -l {url}_output.txt`
 ```bash
 D:\1\dirsearch-0.4.3>python3 Subdomain_query.py whitecap100.org && python3 dirsearch.py -l whitecap100.org_output.txt
 
