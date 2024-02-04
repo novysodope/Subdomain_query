@@ -5,6 +5,7 @@ import urllib3
 import time
 import sys
 import argparse
+import os
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -21,8 +22,12 @@ def http_write_to_file(filename, data):
 def fetch_data(url, page, headers):
     response = requests.get(f"{url}&page={page}", verify=False, headers=headers)
     if response.status_code == 200:
-        json_data = response.json()
-        return json_data.get('data', {}).get('result', [])
+        try:
+            json_data = response.json()
+            return json_data.get('data', {}).get('result', [])
+        except Exception as e:
+            return
+        
     else:
         print(f"[!] 我焯，你被拉黑了，等脚本跑完就换个代理吧. 状态码: {response.status_code}")
         return []
@@ -38,6 +43,9 @@ def fetch_a_tags(url, headers):
         return []
 
 def check_domains(domains_file,url):
+    if not os.path.exists(domains_file):
+        print("暂未发现子域名")
+        return
     with open(domains_file, 'r', encoding='utf-8') as file:
         domains = file.readlines()
 
@@ -139,26 +147,26 @@ def main():
     page = 2
     all_results = []
     while True:
-    	#这个接口从第二页开始才有数据，第一页不显示
-    	results = fetch_data(f"https://chaziyu.com/ipchaxun.do?domain={url}", page, headers_weixin)
-    	if results:
-    		all_results.extend(results)
-    		page += 1
-    		time.sleep(3)  #防止被拉黑，放慢点速度
-    	else:
-    		break
+        #这个接口从第二页开始才有数据，第一页不显示
+        results = fetch_data(f"https://chaziyu.com/ipchaxun.do?domain={url}", page, headers_weixin)
+        if results:
+            all_results.extend(results)
+            page += 1
+            time.sleep(3)  #防止被拉黑，放慢点速度
+        else:
+            break
     print("[+] 第二轮收集")
     for result in all_results:
-    	print(result)
-    	write_to_file(result_filename, [result])
+        print(result)
+        write_to_file(result_filename, [result])
     print("\n")
 
     #把上面的第一页结果直接输出到html了，所以导致上面的接口第一页没有数据，这里是第一页缺失的数据
     a_tags = fetch_a_tags(f"https://chaziyu.com/{url}/", headers_weixin)
     print("[+] 第三轮收集")
     for tag in a_tags:
-    	print(tag)
-    	write_to_file(result_filename, [tag])
+        print(tag)
+        write_to_file(result_filename, [tag])
     print("\n")
     print(f"收集完成，如有结果会在当前目录下生成{result_filename}文件\n")
 
@@ -170,7 +178,7 @@ def main():
     print("[+] 任务结束")
 
 def fingerprint():
-	author = '''
+    author = '''
 
    _____       __        __                      _                                     
   / ___/__  __/ /_  ____/ /___  ____ ___  ____ _(_)___     ____ ___  _____  _______  __
@@ -181,8 +189,8 @@ def fingerprint():
 
 根据备案和证书收集子域名资产                                            Fupo's series
 ______________________________________________________________________________________
-	'''
-	print(author)
+    '''
+    print(author)
 
 if __name__ == "__main__":
     main()
